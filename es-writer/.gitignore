@@ -13,6 +13,9 @@
 logs
 .DS_Store
 
+# file with vacancies info from rabota rf (so big)
+vacancy.json
+
 # Test binary, built with `go test -c`
 *.test
 
