@@ -14,7 +14,7 @@ func init() {
 type BaseConfig struct {
 	Host       string `env:"HOST" envDefault:":1234"`
 	ServerName string `env:"SERVER_NAME" envDefault:"TestServer"`
-	SentryDSN  string `env:"SENTRY_DSN" envDefault:"https://906c97ffd8b940e6a1223e353d1c11eb@sentry.devops.rusklimat.net/15"`
+	SentryDSN  string `env:"SENTRY_DSN" envDefault:""`
 	LogLevel   string `env:"LOG_LEVEL" envDefault:"trace"`
 	TLSKey     string `env:"TLS_KEY" envDefault:""`
 	TLSPem     string `env:"TLS_PEM" envDefault:""`
