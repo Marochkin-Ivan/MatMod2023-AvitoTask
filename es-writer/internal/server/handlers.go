@@ -3,6 +3,7 @@ package server
 import (
 	"es-writer/internal/models"
 	"es-writer/pkg/errs"
+	"github.com/gofiber/fiber/v2"
 	"github.com/sirupsen/logrus"
 	"net/http"
 )

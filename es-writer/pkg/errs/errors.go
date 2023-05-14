@@ -2,6 +2,7 @@ package errs
 
 import (
 	"errors"
+	"github.com/getsentry/sentry-go"
 	"github.com/sirupsen/logrus"
 	"strings"
 	"time"

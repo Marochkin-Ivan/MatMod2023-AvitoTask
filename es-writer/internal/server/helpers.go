@@ -4,10 +4,14 @@ import (
 	"es-writer/internal/models"
 	"es-writer/pkg/errs"
 	"es-writer/pkg/tools/den"
+	"github.com/caarlos0/env/v8"
+	"github.com/getsentry/sentry-go"
+	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	jwtware "github.com/gofiber/jwt/v3"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/sirupsen/logrus"
 )
 

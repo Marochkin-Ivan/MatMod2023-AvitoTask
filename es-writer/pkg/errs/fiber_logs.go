@@ -3,6 +3,7 @@ package errs
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/getsentry/sentry-go"
 	"github.com/sirupsen/logrus"
 	"net/http"
 	"strings"

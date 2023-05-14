@@ -2,6 +2,7 @@ package server
 
 import (
 	"errors"
+	"es-writer/internal/repo/es"
 	"es-writer/pkg/errs"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sirupsen/logrus"
@@ -34,6 +35,12 @@ func WithLogChan(l errs.LogChan) func(*Server) {
 func WithConfig(cfg Config) func(*Server) {
 	return func(s *Server) {
 		s.cfg = cfg
+	}
+}
+
+func WithElasticSearch(cli *es.Client) func(*Server) {
+	return func(s *Server) {
+		s.es = cli
 	}
 }
 
