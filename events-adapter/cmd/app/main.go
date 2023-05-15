@@ -1,5 +1,5 @@
 package main
 
-import "api/internal/app"
+import "events-adapter/internal/app"
 
 func main() { app.Start() }

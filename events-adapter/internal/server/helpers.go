@@ -1,9 +1,9 @@
 package server
 
 import (
-	"api/internal/models"
-	"api/pkg/errs"
-	"api/pkg/tools/den"
+	"events-adapter/internal/models"
+	"events-adapter/pkg/errs"
+	"events-adapter/pkg/tools/den"
 	"github.com/caarlos0/env/v6"
 	"github.com/getsentry/sentry-go"
 	"github.com/gofiber/fiber/v2"

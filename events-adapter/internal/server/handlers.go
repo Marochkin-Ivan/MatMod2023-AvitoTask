@@ -1,10 +1,12 @@
 package server
 
 import (
-	"api/internal/models"
-	"api/pkg/errs"
+	"events-adapter/internal/models"
+	"events-adapter/internal/repo/cache"
+	"events-adapter/internal/repo/logic"
+	"events-adapter/pkg/errs"
+	"events-adapter/pkg/tools/den"
 	"github.com/gofiber/fiber/v2"
-	"github.com/sirupsen/logrus"
 	"net/http"
 )
 
@@ -12,52 +14,60 @@ func (s *Server) ping(c *fiber.Ctx) error {
 	return c.SendStatus(http.StatusOK)
 }
 
-type getListReq struct {
-}
+func (s *Server) event(c *fiber.Ctx) error {
+	const source = "event"
 
-func (s *Server) getList(c *fiber.Ctx) error {
-	const source = "server.getList"
+	var req models.BaseEventRequest
+	err := den.DecodeJson(&req, c.Body())
+	if err != nil {
+		s.logs <- err.WrapWithSentry(source, errs.SentryCategoryHandler, errs.InputToSentryData("req", req))
 
-	var req getListReq
-	if err := c.QueryParser(&req); err != nil {
-		s.logs <- errs.NewError(logrus.InfoLevel, err.Error()).Wrap(source)
-		return c.Status(http.StatusBadRequest).SendString(err.Error())
+		return c.SendStatus(http.StatusBadRequest)
 	}
 
-	// req.Validate()
+	ev := logic.CreateRedisEvent(req)
+	encoded, err := den.EncodeJson(ev)
+	if err != nil {
+		s.logs <- err.WrapWithSentry(source, errs.SentryCategoryHandler, errs.InputToSentryData("req", req))
 
-	// list, err := s.app.GetList(req)
-	// if err != nil {
-	// 	s.logs <- errs.NewError(logrus.InfoLevel, err.Error()).Wrap(source)
-	// 	return c.Status(http.StatusInternalServerError).SendString(err.Error())
-	// }
-
-	return c.Status(http.StatusOK).SendString(models.DefaultList)
-
-	//return c.SendStatus(http.StatusOK)
-}
-
-type getDetailReq struct {
-}
-
-func (s *Server) getDetail(c *fiber.Ctx) error {
-	const source = "server.getDetail"
-
-	var req getDetailReq
-	if err := c.QueryParser(&req); err != nil {
-		s.logs <- errs.NewError(logrus.InfoLevel, err.Error()).Wrap(source)
-		return c.Status(http.StatusBadRequest).SendString(err.Error())
+		return c.SendStatus(http.StatusInternalServerError)
 	}
 
-	// req.Validate()
+	err = s.cache.AddValue(cache.UserEvents, req.UserID, encoded.String())
+	if err != nil {
+		s.logs <- err.WrapWithSentry(source, errs.SentryCategoryHandler, errs.InputToSentryData("req", req))
 
-	// detail, err := s.app.GetDetail(req)
-	// if err != nil {
-	// 	s.logs <- errs.NewError(logrus.InfoLevel, err.Error()).Wrap(source)
-	// 	return c.Status(http.StatusInternalServerError).SendString(err.Error())
-	// }
+		return c.SendStatus(http.StatusInternalServerError)
+	}
 
-	return c.Status(http.StatusOK).SendString(models.DefaultInfo)
+	return c.SendStatus(http.StatusOK)
+}
 
-	//return c.SendStatus(http.StatusOK)
+func (s *Server) search(c *fiber.Ctx) error {
+	const source = "search"
+
+	var req models.SearchEventRequest
+	err := den.DecodeJson(&req, c.Body())
+	if err != nil {
+		s.logs <- err.WrapWithSentry(source, errs.SentryCategoryHandler, errs.InputToSentryData("req", req))
+
+		return c.SendStatus(http.StatusBadRequest)
+	}
+
+	searchEv := logic.CreateRedisSearch(req)
+	encoded, err := den.EncodeJson(searchEv)
+	if err != nil {
+		s.logs <- err.WrapWithSentry(source, errs.SentryCategoryHandler, errs.InputToSentryData("req", req))
+
+		return c.SendStatus(http.StatusInternalServerError)
+	}
+
+	err = s.cache.AddValue(cache.UserSearches, req.UserID, encoded.String())
+	if err != nil {
+		s.logs <- err.WrapWithSentry(source, errs.SentryCategoryHandler, errs.InputToSentryData("req", req))
+
+		return c.SendStatus(http.StatusInternalServerError)
+	}
+
+	return c.SendStatus(http.StatusOK)
 }

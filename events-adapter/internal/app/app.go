@@ -1,8 +1,9 @@
 package app
 
 import (
-	"api/internal/server"
-	"api/pkg/errs"
+	"events-adapter/internal/repo/cache"
+	"events-adapter/internal/server"
+	"events-adapter/pkg/errs"
 	"github.com/sirupsen/logrus"
 	"net/http"
 	"sync"
@@ -23,12 +24,18 @@ func Start() {
 	}
 	lg.SetLevel(lvl)
 
+	conns, cusErr := cache.New()
+	if cusErr != nil {
+		lg.Fatal(cusErr.Error())
+	}
+
 	logChan := make(errs.LogChan, 1000)
 	fiberLg := errs.NewFiberLogger(logChan)
 	s := server.NewServer(
 		server.WithApp(server.NewFiberApp(fiberLg)),
 		server.WithConfig(cfg),
 		server.WithLogChan(logChan),
+		server.WithCache(conns),
 	).SetupHandlers()
 
 	wg := new(sync.WaitGroup)
@@ -45,6 +52,7 @@ func Start() {
 	}
 
 	// close db connections
+	cache.Close(conns)
 
 	close(logChan)
 	wg.Wait()
