@@ -81,3 +81,13 @@ func SetupSentry(serverName, dsn string) *errs.Error {
 
 	return nil
 }
+
+func getQueryParams(c *fiber.Ctx) map[string]string {
+	v := make(map[string]string)
+
+	c.Request().URI().QueryArgs().VisitAll(func(key, value []byte) {
+		v[string(key)] = string(value)
+	})
+
+	return v
+}

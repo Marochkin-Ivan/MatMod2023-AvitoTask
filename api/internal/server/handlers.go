@@ -1,10 +1,9 @@
 package server
 
 import (
-	"api/internal/models"
-	"api/pkg/errs"
+	"encoding/json"
 	"github.com/gofiber/fiber/v2"
-	"github.com/sirupsen/logrus"
+	"log"
 	"net/http"
 )
 
@@ -12,52 +11,40 @@ func (s *Server) ping(c *fiber.Ctx) error {
 	return c.SendStatus(http.StatusOK)
 }
 
-type getListReq struct {
-}
+func (s *Server) search(c *fiber.Ctx) error {
+	const source = "search"
 
-func (s *Server) getList(c *fiber.Ctx) error {
-	const source = "server.getList"
+	queryParams := getQueryParams(c)
 
-	var req getListReq
-	if err := c.QueryParser(&req); err != nil {
-		s.logs <- errs.NewError(logrus.InfoLevel, err.Error()).Wrap(source)
-		return c.Status(http.StatusBadRequest).SendString(err.Error())
+	searchReq := searchRequest{
+		Query: Query{
+			Bool: Bool{
+				Should: Should{
+					MultiMatch: MultiMatch{
+						Query:     queryParams["q"],
+						Fuzziness: "AUTO",
+						Type:      "best_fields",
+						Fields: []string{
+							"title^3",
+							"requirements^1.5",
+							"companyName^1",
+						},
+						TieBreaker: 0.3,
+					},
+				},
+			},
+		},
 	}
 
-	// req.Validate()
-
-	// list, err := s.app.GetList(req)
-	// if err != nil {
-	// 	s.logs <- errs.NewError(logrus.InfoLevel, err.Error()).Wrap(source)
-	// 	return c.Status(http.StatusInternalServerError).SendString(err.Error())
-	// }
-
-	return c.Status(http.StatusOK).SendString(models.DefaultList)
-
-	//return c.SendStatus(http.StatusOK)
-}
-
-type getDetailReq struct {
-}
-
-func (s *Server) getDetail(c *fiber.Ctx) error {
-	const source = "server.getDetail"
-
-	var req getDetailReq
-	if err := c.QueryParser(&req); err != nil {
-		s.logs <- errs.NewError(logrus.InfoLevel, err.Error()).Wrap(source)
-		return c.Status(http.StatusBadRequest).SendString(err.Error())
+	for param, value := range queryParams {
+		if filterFunc, exist := filtersTypeMap[param]; exist {
+			searchReq.withFilter(filterFunc, param, value)
+		}
 	}
 
-	// req.Validate()
+	b, _ := json.MarshalIndent(searchReq, "", "  ")
 
-	// detail, err := s.app.GetDetail(req)
-	// if err != nil {
-	// 	s.logs <- errs.NewError(logrus.InfoLevel, err.Error()).Wrap(source)
-	// 	return c.Status(http.StatusInternalServerError).SendString(err.Error())
-	// }
+	log.Println(string(b))
 
-	return c.Status(http.StatusOK).SendString(models.DefaultInfo)
-
-	//return c.SendStatus(http.StatusOK)
+	return c.SendStatus(http.StatusOK)
 }
