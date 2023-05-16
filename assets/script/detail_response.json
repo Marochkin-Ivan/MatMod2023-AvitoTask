@@ -1,0 +1,41 @@
+{
+  "id": "210000",
+  "title": "ML Engineer",
+  "company": {
+    "id": "100000",
+    "name": "Google",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/706px-Google_%22G%22_Logo.svg.png",
+    "location": "Mountain View, CA",
+    "info": "Google LLC is an American multinational technology company that specializes in Internet-related services and products, which include online advertising technologies, search engine, cloud computing, software, and hardware."
+  },
+  "salary": {
+    "min": 100000,
+    "max": 200000,
+    "currency": "USD"
+  },
+  "description": "Google is and always will be an engineering company. We hire people with a broad set of technical skills who are ready to take on some of technology's greatest challenges and make an impact on millions, if not billions, of users. At Google, engineers not only revolutionize search, they routinely work on massive scalability and storage solutions, large-scale applications and entirely new platforms for developers around the world. From AdWords to Chrome, Android to YouTube, Social to Local, Google engineers are changing the world one technological achievement after another.",
+  "requirements": "BA/BS degree in Computer Science or related technical field or equivalent practical experience.\n\nExperience with one or more general purpose programming languages including but not limited to: Java, C/C++, C#, Objective C, Python, JavaScript, or Go.\n\nExperience with machine learning, natural language processing, algorithmic foundations of optimization, data mining or machine intelligence (artificial intelligence).\n\nExperience architecting, developing, and/or maintaining production-grade cloud solutions in virtualized environments such as AWS, Azure, or GCP.\n\nExperience with one or more of the following: data analytics, distributed computing, large-scale system design, networking, security, development of large-scale web applications, or systems administration.\n\nInterest and ability to learn other coding languages as needed.\n\nAbility to speak and write in English fluently and idiomatically.",
+  "conditions": "Health, dental, vision, 401k, free food, free gym, free laundry, free haircuts, free massages, free dry cleaning, free transportation, free housing, free everything.",
+  "tags": [
+    "Python",
+    "Java",
+    "C++",
+    "C#",
+    "JavaScript",
+    "Go",
+    "AWS",
+    "Azure",
+    "GCP",
+    "Machine Learning",
+    "Natural Language Processing",
+    "Data Mining",
+    "Artificial Intelligence",
+    "Data Analytics",
+    "Distributed Computing",
+    "Large-Scale System Design",
+    "Networking",
+    "Security",
+    "Web Development",
+    "Systems Administration"
+  ]
+}
