@@ -3,83 +3,45 @@ package cache
 import (
 	"api/pkg/errs"
 	"context"
-	"fmt"
 	"github.com/sirupsen/logrus"
 )
 
-func (c *Client) Get(table int, key string) (string, *errs.Error) {
-	const source = "cache.Get"
+// GetValue возвращает string
+func (c Client) GetValue(dbID int, key string) (string, *errs.Error) {
+	const source = "GetValue"
 
-	if table >= tableCount || table < 0 {
-		return "", errs.NewError(logrus.ErrorLevel, "unexpected table id").
-			WrapWithSentry(source, errs.SentryCategoryCache, errs.InputToSentryData("table", table))
+	if dbID < 0 || dbID >= tableCount {
+		return "", errs.NewError(logrus.ErrorLevel, "unknown DB").
+			WrapWithSentry(source, errs.SentryCategoryCache, errs.InputToSentryData("dbID", dbID))
 	}
 
-	rdb := c.cs[table]
+	rdb := c.cs[dbID]
 
-	// get the value and update last used timestamp
-	val, err := rdb.Do(rdb.Context(), "GET", key).Result()
-	if err != nil {
-		return "", errs.NewError(logrus.ErrorLevel, err.Error()).
-			WrapWithSentry(source, errs.SentryCategoryCache, errs.InputToSentryData("table, key", table, key))
+	val := rdb.Get(context.Background(), key).Val()
+	if val == "" {
+		return "", errs.NewError(logrus.WarnLevel, "cache get error: key ["+key+"] isn't exist in "+DBName[dbID]+" DB").
+			WrapWithSentry(source, errs.SentryCategoryCache, errs.InputToSentryData("dbId, key", dbID, key))
 	}
 
-	return fmt.Sprintf("%v", val), nil
+	return val, nil
 }
 
-func (c *Client) Set(table int, key, val string) *errs.Error {
-	const source = "cache.Get"
+// GetArray возвращает []string
+func (c Client) GetArray(dbID int, key string) ([]string, *errs.Error) {
+	const source = "GetValue"
 
-	if table >= tableCount || table < 0 {
-		return errs.NewError(logrus.ErrorLevel, "unexpected table id").
-			WrapWithSentry(source, errs.SentryCategoryCache, errs.InputToSentryData("table", table))
+	if dbID < 0 || dbID >= tableCount {
+		return nil, errs.NewError(logrus.ErrorLevel, "unknown DB").
+			WrapWithSentry(source, errs.SentryCategoryCache, errs.InputToSentryData("dbID", dbID))
 	}
 
-	rdb := c.cs[table]
+	rdb := c.cs[dbID]
 
-	err := rdb.Set(context.Background(), key, val, 0).Err()
-	if err != nil {
-		return errs.NewError(logrus.ErrorLevel, err.Error()).
-			WrapWithSentry(source, errs.SentryCategoryCache, errs.InputToSentryData("table, key, val", table, key, val))
+	val := rdb.SMembers(context.Background(), key).Val()
+	if val == nil {
+		return nil, errs.NewError(logrus.WarnLevel, "cache get error: key ["+key+"] isn't exist in "+DBName[dbID]+" DB").
+			WrapWithSentry(source, errs.SentryCategoryCache, errs.InputToSentryData("dbId, key", dbID, key))
 	}
 
-	return nil
-}
-
-func (c *Client) Delete(table int, key string) *errs.Error {
-	const source = "cache.Delete"
-
-	if table >= tableCount || table < 0 {
-		return errs.NewError(logrus.ErrorLevel, "unexpected table id").
-			WrapWithSentry(source, errs.SentryCategoryCache, errs.InputToSentryData("table", table))
-	}
-
-	rdb := c.cs[table]
-
-	err := rdb.Del(context.Background(), key).Err()
-	if err != nil {
-		return errs.NewError(logrus.ErrorLevel, err.Error()).
-			WrapWithSentry(source, errs.SentryCategoryCache, errs.InputToSentryData("table, key", table, key))
-	}
-
-	return nil
-}
-
-func (c *Client) GetKeys(table int) ([]string, *errs.Error) {
-	const source = "cache.GetKeys"
-
-	if table >= tableCount || table < 0 {
-		return nil, errs.NewError(logrus.ErrorLevel, "unexpected table id").
-			WrapWithSentry(source, errs.SentryCategoryCache, errs.InputToSentryData("table", table))
-	}
-
-	rdb := c.cs[table]
-
-	keys, err := rdb.Keys(context.Background(), "*").Result()
-	if err != nil {
-		return nil, errs.NewError(logrus.ErrorLevel, err.Error()).
-			WrapWithSentry(source, errs.SentryCategoryCache, errs.InputToSentryData("table", table))
-	}
-
-	return keys, nil
+	return val, nil
 }

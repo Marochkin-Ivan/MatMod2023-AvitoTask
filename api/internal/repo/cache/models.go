@@ -10,6 +10,12 @@ const (
 	tableCount // must be last in list
 )
 
+var DBName = map[int]string{
+	DetailInfoTable: "DetailInfo",
+	KeyWordsTable:   "KeyWords",
+	EventsTable:     "Events",
+}
+
 type Client struct {
 	cs  []*redis.Client
 	cfg cfg

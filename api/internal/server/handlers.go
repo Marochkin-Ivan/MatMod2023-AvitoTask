@@ -16,6 +16,8 @@ func (s *Server) ping(c *fiber.Ctx) error {
 func (s *Server) search(c *fiber.Ctx) error {
 	const source = "search"
 
+	userID := c.Cookies("user_id")
+
 	queryParams := getQueryParams(c)
 
 	searchReq := createSearchRequest(queryParams["q"])
@@ -47,6 +49,17 @@ func (s *Server) search(c *fiber.Ctx) error {
 	err = den.DecodeJson(&res, resBytes)
 	if err != nil {
 		s.logs <- errs.NewError(logrus.ErrorLevel, err.Error()).Wrap(source)
+
+		return c.SendStatus(http.StatusInternalServerError)
+	}
+
+	err = res.RankSort(userID, s.cache)
+	if err != nil {
+		s.logs <- err.WrapWithSentry(
+			source,
+			errs.SentryCategoryHandler,
+			errs.InputToSentryData("userID", userID),
+		)
 
 		return c.SendStatus(http.StatusInternalServerError)
 	}

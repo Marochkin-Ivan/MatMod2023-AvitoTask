@@ -2,7 +2,6 @@ package server
 
 import (
 	"api/internal/models"
-	"api/internal/repo/cache"
 	"api/internal/repo/es"
 	"api/pkg/errs"
 	"github.com/gofiber/fiber/v2"
@@ -13,7 +12,7 @@ type Server struct {
 	logs  errs.LogChan
 	a     *fiber.App
 	es    *es.Client
-	cache *cache.Client
+	cache Getter
 }
 
 type Config struct {
@@ -111,6 +110,7 @@ type Hit struct {
 	Id     string  `json:"_id"`
 	Score  float64 `json:"_score"`
 	Source Source  `json:"_source"`
+	Rating float64 `json:"-"`
 }
 
 type Source struct {
@@ -140,4 +140,14 @@ type Vacancy struct {
 	Experience   int     `json:"experience"`
 	Employment   string  `json:"employment"`
 	CreatedAt    string  `json:"createdAt"`
+}
+
+type RedisEvent struct {
+	VacancyID  string  `json:"vacancy_id"`
+	TypePoints float64 `json:"type_points"`
+}
+
+type Getter interface {
+	GetValue(dbID int, key string) (string, *errs.Error)
+	GetArray(dbID int, key string) ([]string, *errs.Error)
 }

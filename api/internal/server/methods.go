@@ -1,7 +1,12 @@
 package server
 
 import (
+	"api/internal/repo/cache"
+	"api/pkg/errs"
+	"api/pkg/tools/den"
+	"sort"
 	"strconv"
+	"strings"
 )
 
 func (req *searchRequest) withFilter(filterFunc, param, value string) {
@@ -39,6 +44,47 @@ func (req *searchRequest) withFilter(filterFunc, param, value string) {
 		v, _ := strconv.Atoi(value)
 		req.Size = v
 	}
+}
+
+func (esResp ElasticResponse) RankSort(userID string, c Getter) *errs.Error {
+	const source = "RankSort"
+
+	keywordsPoints := make(map[string]float64)
+
+	events, err := c.GetArray(cache.EventsTable, userID)
+	if err != nil {
+		return err.Wrap(source)
+	}
+
+	for _, ev := range events {
+		var event RedisEvent
+		err = den.DecodeJson(&event, []byte(ev))
+		if err != nil {
+			return err.Wrap(source)
+		}
+
+		keywords, err := c.GetArray(cache.KeyWordsTable, event.VacancyID)
+		if err != nil {
+			return err.Wrap(source)
+		}
+
+		for _, kw := range keywords {
+			keywordsPoints[kw] += event.TypePoints
+		}
+	}
+
+	for _, vacancy := range esResp.Hits.Hits {
+		vKeywords := strings.Split(vacancy.Source.Keywords, ",")
+		for _, kw := range vKeywords {
+			vacancy.Rating += keywordsPoints[kw]
+		}
+	}
+
+	sort.Slice(esResp.Hits.Hits, func(i, j int) bool {
+		return esResp.Hits.Hits[i].Rating > esResp.Hits.Hits[j].Rating
+	})
+
+	return nil
 }
 
 func (esResp ElasticResponse) ToResponse() Response {
