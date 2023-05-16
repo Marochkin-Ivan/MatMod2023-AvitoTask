@@ -28,6 +28,7 @@ func Start() {
 	if cusErr != nil {
 		lg.Fatal(cusErr.Error())
 	}
+	defer cache.Close(conns)
 
 	logChan := make(errs.LogChan, 1000)
 	fiberLg := errs.NewFiberLogger(logChan)
@@ -52,7 +53,6 @@ func Start() {
 	}
 
 	// close db connections
-	cache.Close(conns)
 
 	close(logChan)
 	wg.Wait()

@@ -20,22 +20,7 @@ type BaseConfig struct {
 	TLSPem     string `env:"TLS_PEM" envDefault:""`
 }
 
-type BaseEventRequest struct {
-	UserID    string `json:"user_id"`
-	VacancyID string `json:"vacancy_id"`
-	Type      string `json:"type"`
-}
-
-type SearchEventRequest struct {
-	BaseEventRequest
-	SearchPhrases string `json:"search_phrases"`
-}
-
 type RedisEvent struct {
 	VacancyID string `json:"vacancy_id"`
 	Type      string `json:"type"`
-}
-
-type RedisSearch struct {
-	Phrases []string `json:"phrases"`
 }

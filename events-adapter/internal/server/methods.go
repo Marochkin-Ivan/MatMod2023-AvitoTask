@@ -49,8 +49,7 @@ func (s *Server) SetupHandlers() *Server {
 	v1.Get("/ping", s.ping)
 
 	// for example
-	v1.Post("/event", s.event)
-	v1.Post("/search", s.search)
+	v1.Get("/event", s.event)
 
 	return s
 }

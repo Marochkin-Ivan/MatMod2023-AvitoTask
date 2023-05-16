@@ -1,12 +1,12 @@
 package server
 
 import (
-	"events-adapter/internal/models"
 	"events-adapter/internal/repo/cache"
 	"events-adapter/internal/repo/logic"
 	"events-adapter/pkg/errs"
 	"events-adapter/pkg/tools/den"
 	"github.com/gofiber/fiber/v2"
+	"github.com/sirupsen/logrus"
 	"net/http"
 )
 
@@ -17,54 +17,34 @@ func (s *Server) ping(c *fiber.Ctx) error {
 func (s *Server) event(c *fiber.Ctx) error {
 	const source = "event"
 
-	var req models.BaseEventRequest
-	err := den.DecodeJson(&req, c.Body())
-	if err != nil {
-		s.logs <- err.WrapWithSentry(source, errs.SentryCategoryHandler, errs.InputToSentryData("req", req))
+	userID := c.Cookies("user_id")
+	s.logs <- errs.NewError(logrus.DebugLevel, userID).Wrap(source)
 
-		return c.SendStatus(http.StatusBadRequest)
-	}
+	vacancyID := c.Query("vacancy_id")
+	s.logs <- errs.NewError(logrus.DebugLevel, vacancyID).Wrap(source)
 
-	ev := logic.CreateRedisEvent(req)
+	eventType := c.Query("type")
+	s.logs <- errs.NewError(logrus.DebugLevel, eventType).Wrap(source)
+
+	ev := logic.CreateRedisEvent(vacancyID, eventType)
 	encoded, err := den.EncodeJson(ev)
 	if err != nil {
-		s.logs <- err.WrapWithSentry(source, errs.SentryCategoryHandler, errs.InputToSentryData("req", req))
+		s.logs <- err.WrapWithSentry(
+			source,
+			errs.SentryCategoryHandler,
+			errs.InputToSentryData("vacancyID, type", vacancyID, eventType),
+		)
 
 		return c.SendStatus(http.StatusInternalServerError)
 	}
 
-	err = s.cache.AddValue(cache.UserEvents, req.UserID, encoded.String())
+	err = s.cache.AddValue(cache.UserEvents, userID, encoded.String())
 	if err != nil {
-		s.logs <- err.WrapWithSentry(source, errs.SentryCategoryHandler, errs.InputToSentryData("req", req))
-
-		return c.SendStatus(http.StatusInternalServerError)
-	}
-
-	return c.SendStatus(http.StatusOK)
-}
-
-func (s *Server) search(c *fiber.Ctx) error {
-	const source = "search"
-
-	var req models.SearchEventRequest
-	err := den.DecodeJson(&req, c.Body())
-	if err != nil {
-		s.logs <- err.WrapWithSentry(source, errs.SentryCategoryHandler, errs.InputToSentryData("req", req))
-
-		return c.SendStatus(http.StatusBadRequest)
-	}
-
-	searchEv := logic.CreateRedisSearch(req)
-	encoded, err := den.EncodeJson(searchEv)
-	if err != nil {
-		s.logs <- err.WrapWithSentry(source, errs.SentryCategoryHandler, errs.InputToSentryData("req", req))
-
-		return c.SendStatus(http.StatusInternalServerError)
-	}
-
-	err = s.cache.AddValue(cache.UserSearches, req.UserID, encoded.String())
-	if err != nil {
-		s.logs <- err.WrapWithSentry(source, errs.SentryCategoryHandler, errs.InputToSentryData("req", req))
+		s.logs <- err.WrapWithSentry(
+			source,
+			errs.SentryCategoryHandler,
+			errs.InputToSentryData("vacancyID, type", vacancyID, eventType),
+		)
 
 		return c.SendStatus(http.StatusInternalServerError)
 	}

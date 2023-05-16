@@ -15,20 +15,12 @@ const (
 	//
 	// key: user_id (string)
 	//
-	// value: timestamp(int64)
+	// value: models.RedisEvent (json-string)
 	UserEvents = iota
-
-	// UserSearches
-	//
-	// key: user_id (string)
-	//
-	// value: timestamp(int64)
-	UserSearches
 
 	tablesCount
 )
 
 var DBName = map[int]string{
 	0: "UserEvents",
-	1: "UserSearches",
 }
