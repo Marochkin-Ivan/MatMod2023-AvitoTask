@@ -1,9 +1,11 @@
 package server
 
 import (
+	"api/pkg/errs"
+	"api/pkg/tools/den"
 	"encoding/json"
 	"github.com/gofiber/fiber/v2"
-	"log"
+	"github.com/sirupsen/logrus"
 	"net/http"
 )
 
@@ -43,8 +45,29 @@ func (s *Server) search(c *fiber.Ctx) error {
 	}
 
 	b, _ := json.MarshalIndent(searchReq, "", "  ")
+	s.logs <- errs.NewError(logrus.DebugLevel, string(b)).Wrap(source)
 
-	log.Println(string(b))
+	searchReqBytes, err := den.EncodeJson(searchReq)
+	if err != nil {
+		s.logs <- errs.NewError(logrus.ErrorLevel, err.Error()).Wrap(source)
 
-	return c.SendStatus(http.StatusOK)
+		return c.SendStatus(http.StatusInternalServerError)
+	}
+
+	resBytes, err := s.es.Search(searchReqBytes.Bytes())
+	if err != nil {
+		s.logs <- errs.NewError(logrus.ErrorLevel, err.Error()).Wrap(source)
+
+		return c.SendStatus(http.StatusInternalServerError)
+	}
+
+	var res ElasticResponse
+	err = den.DecodeJson(&res, resBytes)
+	if err != nil {
+		s.logs <- errs.NewError(logrus.ErrorLevel, err.Error()).Wrap(source)
+
+		return c.SendStatus(http.StatusInternalServerError)
+	}
+
+	return c.Status(http.StatusOK).JSON(res)
 }

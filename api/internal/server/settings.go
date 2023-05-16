@@ -1,6 +1,7 @@
 package server
 
 import (
+	"api/internal/repo/es"
 	"api/pkg/errs"
 	"errors"
 	"github.com/gofiber/fiber/v2"
@@ -34,6 +35,12 @@ func WithLogChan(l errs.LogChan) func(*Server) {
 func WithConfig(cfg Config) func(*Server) {
 	return func(s *Server) {
 		s.cfg = cfg
+	}
+}
+
+func WithElasticSearch(cli *es.Client) func(*Server) {
+	return func(s *Server) {
+		s.es = cli
 	}
 }
 

@@ -1,6 +1,7 @@
 package app
 
 import (
+	"api/internal/repo/es"
 	"api/internal/server"
 	"api/pkg/errs"
 	"github.com/sirupsen/logrus"
@@ -23,12 +24,18 @@ func Start() {
 	}
 	lg.SetLevel(lvl)
 
+	esCli, cusErr := es.New()
+	if cusErr != nil {
+		lg.Fatal(cusErr.Error())
+	}
+
 	logChan := make(errs.LogChan, 1000)
 	fiberLg := errs.NewFiberLogger(logChan)
 	s := server.NewServer(
 		server.WithApp(server.NewFiberApp(fiberLg)),
 		server.WithConfig(cfg),
 		server.WithLogChan(logChan),
+		server.WithElasticSearch(esCli),
 	).SetupHandlers()
 
 	wg := new(sync.WaitGroup)
