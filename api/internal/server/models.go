@@ -31,8 +31,8 @@ var filtersTypeMap = map[string]string{
 
 type searchRequest struct {
 	Query Query `json:"query"`
-	From  int   `json:"from"`
-	Size  int   `json:"size"`
+	From  int   `json:"from,omitempty"`
+	Size  int   `json:"size,omitempty"`
 }
 
 type Query struct {
