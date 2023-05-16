@@ -51,5 +51,5 @@ func (s *Server) search(c *fiber.Ctx) error {
 		return c.SendStatus(http.StatusInternalServerError)
 	}
 
-	return c.Status(http.StatusOK).JSON(res)
+	return c.Status(http.StatusOK).JSON(res.ToResponse())
 }

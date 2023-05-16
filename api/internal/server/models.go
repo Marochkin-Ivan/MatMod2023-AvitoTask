@@ -86,3 +86,19 @@ type Source struct {
 	Employment   string  `json:"employment"`
 	CreatedAt    string  `json:"createdAt"`
 }
+
+type Response []Vacancy
+
+type Vacancy struct {
+	ID           string  `json:"id"`
+	Title        string  `json:"title"`
+	Requirements string  `json:"requirements"`
+	Keywords     string  `json:"keywords"`
+	Salary       float64 `json:"salary"`
+	Region       string  `json:"region"`
+	CompanyName  string  `json:"companyName"`
+	Schedule     string  `json:"schedule"`
+	Experience   int     `json:"experience"`
+	Employment   string  `json:"employment"`
+	CreatedAt    string  `json:"createdAt"`
+}
