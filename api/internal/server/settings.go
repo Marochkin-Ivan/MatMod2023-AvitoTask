@@ -1,6 +1,7 @@
 package server
 
 import (
+	"api/internal/repo/cache"
 	"api/internal/repo/es"
 	"api/pkg/errs"
 	"errors"
@@ -41,6 +42,12 @@ func WithConfig(cfg Config) func(*Server) {
 func WithElasticSearch(cli *es.Client) func(*Server) {
 	return func(s *Server) {
 		s.es = cli
+	}
+}
+
+func WithCache(c *cache.Client) func(*Server) {
+	return func(s *Server) {
+		s.cache = c
 	}
 }
 

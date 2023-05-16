@@ -1,6 +1,7 @@
 package app
 
 import (
+	"api/internal/repo/cache"
 	"api/internal/repo/es"
 	"api/internal/server"
 	"api/pkg/errs"
@@ -24,6 +25,11 @@ func Start() {
 	}
 	lg.SetLevel(lvl)
 
+	cacheCl, err := cache.New()
+	if err != nil {
+		lg.Fatal()
+	}
+
 	esCli, cusErr := es.New()
 	if cusErr != nil {
 		lg.Fatal(cusErr.Error())
@@ -36,6 +42,7 @@ func Start() {
 		server.WithConfig(cfg),
 		server.WithLogChan(logChan),
 		server.WithElasticSearch(esCli),
+		server.WithCache(cacheCl),
 	).SetupHandlers()
 
 	wg := new(sync.WaitGroup)
