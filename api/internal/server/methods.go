@@ -21,7 +21,7 @@ func (req *searchRequest) withFilter(filterFunc, param, value string) {
 		req.Query.Bool.Filter = append(req.Query.Bool.Filter,
 			map[string]any{
 				filterFunc: map[string]map[string]string{
-					param: {
+					"salary": {
 						p: value,
 					},
 				},
