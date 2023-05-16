@@ -12,6 +12,8 @@
 .idea
 logs
 .DS_Store
+rr_vacancies_normal_format.json
+vacancy_1.json
 
 # file with vacancies info from rabota rf (so big)
 vacancy.json

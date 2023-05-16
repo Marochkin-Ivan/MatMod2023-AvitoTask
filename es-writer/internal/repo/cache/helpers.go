@@ -1,8 +1,8 @@
 package cache
 
 import (
-	"events-adapter/pkg/errs"
-	"github.com/caarlos0/env/v6"
+	"es-writer/pkg/errs"
+	"github.com/caarlos0/env/v8"
 	"github.com/go-redis/redis/v8"
 	"github.com/sirupsen/logrus"
 )
@@ -20,7 +20,7 @@ func getConfig() (config, *errs.Error) {
 }
 
 func New() (Connections, *errs.Error) {
-	const source = "New"
+	const source = "NewConnections"
 
 	c, err := getConfig()
 	if err != nil {

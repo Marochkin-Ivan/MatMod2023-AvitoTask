@@ -44,14 +44,24 @@ func WithElasticSearch(cli *es.Client) func(*Server) {
 	}
 }
 
+func WithCache(c Setter) func(*Server) {
+	return func(s *Server) {
+		s.cache = c
+	}
+}
+
 func (s *Server) SetupHandlers() *Server {
 	v1 := s.a.Group("/api/v1/search")
 
 	v1.Get("/ping", s.ping)
 
 	// for example
-	v1.Get("/list", s.getList)
-	v1.Get("/:id/detail", s.getDetail)
+	v1.Get("/create/index", s.create)
+	v1.Get("/insert/document", s.insert)
+	v1.Get("/insert/documents", s.insertBatch)
+	v1.Get("/fill/cache", s.fillRedis)
+
+	v1.Get("/test", s.test)
 
 	return s
 }
@@ -87,4 +97,19 @@ func (s *Server) GracefulShutdown(connectionsClosed chan struct{}) {
 	}
 
 	connectionsClosed <- struct{}{}
+}
+
+func (f FileInfo) ToESDoc() ESDoc {
+	return ESDoc{
+		Title:        f.Name,
+		Requirements: f.PositionRequirements,
+		Keywords:     f.ProfessionalSphereName,
+		Salary:       float64(f.SalaryMin),
+		Region:       f.RegionName,
+		CompanyName:  f.FullCompanyName,
+		Schedule:     f.ScheduleType,
+		Experience:   f.RequiredExperience,
+		Employment:   f.BusyType,
+		CreatedAt:    f.DateCreate,
+	}
 }

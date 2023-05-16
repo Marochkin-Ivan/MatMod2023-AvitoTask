@@ -5,22 +5,30 @@ import "github.com/go-redis/redis/v8"
 type Connections []*redis.Client
 
 type config struct {
-	addr     string `env:"REDIS_ADDR" envDefault:"localhost:6379"`
+	addr     string `env:"REDIS_ADDR" envDefault:""`
 	user     string `env:"REDIS_USER" envDefault:""`
 	password string `env:"REDIS_PASS" envDefault:""`
 }
 
 const (
-	// UserEvents
+	// Info
 	//
-	// key: user_id (string)
+	// key: vacancy_id (string)
 	//
-	// value: models.RedisEvent (json-string)
-	UserEvents = 2
+	//value:
+	Info = iota
+
+	// Keywords
+	//
+	//key: vacancy_id (string)
+	//
+	//value:
+	Keywords
 
 	tablesCount
 )
 
 var DBName = map[int]string{
-	2: "UserEvents",
+	0: "Info",
+	1: "Keywords",
 }

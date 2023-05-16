@@ -2,21 +2,60 @@ package server
 
 import (
 	"api/internal/models"
+	"api/internal/repo/cache"
 	"api/internal/repo/es"
 	"api/pkg/errs"
 	"github.com/gofiber/fiber/v2"
 )
 
 type Server struct {
-	cfg  Config
-	logs errs.LogChan
-	a    *fiber.App
-	es   *es.Client
+	cfg   Config
+	logs  errs.LogChan
+	a     *fiber.App
+	es    *es.Client
+	cache *cache.Client
 }
 
 type Config struct {
 	models.BaseConfig
 	// special fields for server ...
+}
+
+var FiltersMap = map[string][]string{
+	"keywords": {
+		"Безопасность",
+		"Юриспруденция",
+		"Маркетинг",
+		"Консалтинг",
+		"Пищевая промышленность",
+		"Логистика",
+		"Управление персоналом",
+		"Строительство",
+		"Производство",
+		"Сельское хозяйство",
+		"Образование",
+		"Торговля",
+		"Информационные технологии",
+		"Электроэнергетика",
+		"Здравоохранение и социальное обеспечение",
+		"Бухгалтерия",
+		"Реклама",
+		"Туризм",
+	},
+	"employment": {
+		"Полная занятость",
+		"Частичная занятость",
+		"Проектная работа",
+		"Стажировка",
+		"Волонтёрство",
+	},
+	"schedule": {
+		"Полный день",
+		"Сменный график",
+		"Гибкий график",
+		"Удалённая работа",
+		"Вахтовый метод",
+	},
 }
 
 var filtersTypeMap = map[string]string{
