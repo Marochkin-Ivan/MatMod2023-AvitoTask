@@ -21,6 +21,6 @@ type BaseConfig struct {
 }
 
 type RedisEvent struct {
-	VacancyID string `json:"vacancy_id"`
-	Type      string `json:"type"`
+	VacancyID  string  `json:"vacancy_id"`
+	TypePoints float64 `json:"type_points"`
 }

@@ -20,7 +20,7 @@ func getConfig() (config, *errs.Error) {
 }
 
 func New() (Connections, *errs.Error) {
-	const source = "NewConnections"
+	const source = "New"
 
 	c, err := getConfig()
 	if err != nil {

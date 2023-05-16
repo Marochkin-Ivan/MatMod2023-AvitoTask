@@ -16,11 +16,11 @@ const (
 	// key: user_id (string)
 	//
 	// value: models.RedisEvent (json-string)
-	UserEvents = iota
+	UserEvents = 2
 
 	tablesCount
 )
 
 var DBName = map[int]string{
-	0: "UserEvents",
+	2: "UserEvents",
 }
