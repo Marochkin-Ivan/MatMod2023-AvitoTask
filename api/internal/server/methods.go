@@ -1,5 +1,9 @@
 package server
 
+import (
+	"strconv"
+)
+
 func (req *searchRequest) withFilter(filterFunc, param, value string) {
 	switch param {
 	case "keywords", "employment", "schedule":
@@ -26,5 +30,13 @@ func (req *searchRequest) withFilter(filterFunc, param, value string) {
 					},
 				},
 			})
+
+	case "from":
+		v, _ := strconv.Atoi(value)
+		req.From = v
+
+	case "size":
+		v, _ := strconv.Atoi(value)
+		req.Size = v
 	}
 }

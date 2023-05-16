@@ -91,3 +91,25 @@ func getQueryParams(c *fiber.Ctx) map[string]string {
 
 	return v
 }
+
+func createSearchRequest(q string) searchRequest {
+	return searchRequest{
+		Query: Query{
+			Bool: Bool{
+				Should: Should{
+					MultiMatch: MultiMatch{
+						Query:     q,
+						Fuzziness: "AUTO",
+						Type:      "best_fields",
+						Fields: []string{
+							"title^3",
+							"requirements^1.5",
+							"companyName^1",
+						},
+						TieBreaker: 0.3,
+					},
+				},
+			},
+		},
+	}
+}

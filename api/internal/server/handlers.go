@@ -18,25 +18,7 @@ func (s *Server) search(c *fiber.Ctx) error {
 
 	queryParams := getQueryParams(c)
 
-	searchReq := searchRequest{
-		Query: Query{
-			Bool: Bool{
-				Should: Should{
-					MultiMatch: MultiMatch{
-						Query:     queryParams["q"],
-						Fuzziness: "AUTO",
-						Type:      "best_fields",
-						Fields: []string{
-							"title^3",
-							"requirements^1.5",
-							"companyName^1",
-						},
-						TieBreaker: 0.3,
-					},
-				},
-			},
-		},
-	}
+	searchReq := createSearchRequest(queryParams["q"])
 
 	for param, value := range queryParams {
 		if filterFunc, exist := filtersTypeMap[param]; exist {
@@ -44,17 +26,17 @@ func (s *Server) search(c *fiber.Ctx) error {
 		}
 	}
 
-	b, _ := json.MarshalIndent(searchReq, "", "  ")
+	b, _ := json.Marshal(searchReq)
 	s.logs <- errs.NewError(logrus.DebugLevel, string(b)).Wrap(source)
 
-	searchReqBytes, err := den.EncodeJson(searchReq)
+	encodedSearchReq, err := den.EncodeJson(searchReq)
 	if err != nil {
 		s.logs <- errs.NewError(logrus.ErrorLevel, err.Error()).Wrap(source)
 
 		return c.SendStatus(http.StatusInternalServerError)
 	}
 
-	resBytes, err := s.es.Search(searchReqBytes.Bytes())
+	resBytes, err := s.es.Search(encodedSearchReq.Bytes())
 	if err != nil {
 		s.logs <- errs.NewError(logrus.ErrorLevel, err.Error()).Wrap(source)
 

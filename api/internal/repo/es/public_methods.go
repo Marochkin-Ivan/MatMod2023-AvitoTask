@@ -10,7 +10,7 @@ import (
 )
 
 func (c *Client) Search(queryByte []byte) ([]byte, *errs.Error) {
-	const source = "es.CreateIndex"
+	const source = "es.Search"
 
 	searchRequest := esapi.SearchRequest{
 		Index: []string{"vacancy"},
