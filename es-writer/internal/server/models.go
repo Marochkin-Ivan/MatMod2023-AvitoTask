@@ -8,10 +8,11 @@ import (
 )
 
 type Server struct {
-	cfg  Config
-	logs errs.LogChan
-	a    *fiber.App
-	es   *es.Client
+	cfg   Config
+	logs  errs.LogChan
+	a     *fiber.App
+	es    *es.Client
+	cache Setter
 }
 
 type Config struct {
@@ -38,22 +39,6 @@ var createIndexRequest = map[string]interface{}{
 			"createdAt":    map[string]interface{}{"type": "date"},    // date_create
 		},
 	},
-}
-
-type ReindexRequest struct {
-	Source struct {
-		Index string `json:"index"`
-	} `json:"source"`
-	Dest struct {
-		Index string `json:"index"`
-	} `json:"dest"`
-	Script struct {
-		Source string `json:"source"`
-		Lang   string `json:"lang"`
-		Params struct {
-			Keywords string `json:"keywords"`
-		} `json:"params"`
-	} `json:"script"`
 }
 
 type ESDoc struct {
@@ -90,4 +75,11 @@ type FileInfo struct {
 	Address                  string `json:"vacancy_address"`
 	Name                     string `json:"vacancy_name"`
 	WorkPlaces               int    `json:"work_places"`
+}
+
+type Setter interface {
+	// AddValue добавляет множество значений к массиву |ключ(string) : значение(string)|
+	AddValue(dbID int, key string, val []string) *errs.Error
+	// SetValue создает элемент в указанной таблице |ключ(string) : значение(string)|
+	SetValue(dbID int, key string, val string) *errs.Error
 }

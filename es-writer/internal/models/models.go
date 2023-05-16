@@ -19,3 +19,5 @@ type BaseConfig struct {
 	TLSKey     string `env:"TLS_KEY" envDefault:""`
 	TLSPem     string `env:"TLS_PEM" envDefault:""`
 }
+
+const IndexName = "vacancy"

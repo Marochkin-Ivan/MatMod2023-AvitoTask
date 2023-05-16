@@ -1,6 +1,7 @@
 package app
 
 import (
+	"es-writer/internal/repo/cache"
 	"es-writer/internal/repo/es"
 	"es-writer/internal/server"
 	"es-writer/pkg/errs"
@@ -29,6 +30,12 @@ func Start() {
 		lg.Fatal(cusErr.Error())
 	}
 
+	conns, cusErr := cache.New()
+	if cusErr != nil {
+		lg.Fatal(cusErr.Error())
+	}
+	defer cache.Close(conns)
+
 	logChan := make(errs.LogChan, 1000)
 	fiberLg := errs.NewFiberLogger(logChan)
 	s := server.NewServer(
@@ -36,6 +43,7 @@ func Start() {
 		server.WithConfig(cfg),
 		server.WithLogChan(logChan),
 		server.WithElasticSearch(esCli),
+		server.WithCache(conns),
 	).SetupHandlers()
 
 	wg := new(sync.WaitGroup)
