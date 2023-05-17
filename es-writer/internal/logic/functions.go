@@ -3,7 +3,6 @@ package logic
 import (
 	"bytes"
 	"es-writer/internal/models"
-	"es-writer/internal/server"
 	"es-writer/pkg/errs"
 	"es-writer/pkg/tools/den"
 	"github.com/elastic/go-elasticsearch/v8/esapi"
@@ -13,8 +12,8 @@ import (
 )
 
 // SplitIntoBatches Функция для разделения среза на пачки по указанному размеру
-func SplitIntoBatches(slice []server.FileInfo, batchSize int) [][]server.FileInfo {
-	var batches [][]server.FileInfo
+func SplitIntoBatches(slice []models.FileInfo, batchSize int) [][]models.FileInfo {
+	var batches [][]models.FileInfo
 
 	for batchSize < len(slice) {
 		slice, batches = slice[batchSize:], append(batches, slice[0:batchSize:batchSize])
@@ -24,7 +23,7 @@ func SplitIntoBatches(slice []server.FileInfo, batchSize int) [][]server.FileInf
 	return batches
 }
 
-func InsertDocuments(docs []server.FileInfo, indexName string, insert func(name string, req []byte, id string) *errs.Error) *errs.Error {
+func InsertDocuments(docs []models.FileInfo, indexName string, insert func(name string, req []byte, id string) *errs.Error) *errs.Error {
 	const source = "logic.InsertDocuments"
 
 	for idx, doc := range docs {
@@ -43,7 +42,7 @@ func InsertDocuments(docs []server.FileInfo, indexName string, insert func(name 
 	return nil
 }
 
-func InsertBatchOfDocuments(batches [][]server.FileInfo, indexName string, insert func(req esapi.BulkRequest) *errs.Error) *errs.Error {
+func InsertBatchOfDocuments(batches [][]models.FileInfo, indexName string, insert func(req esapi.BulkRequest) *errs.Error) *errs.Error {
 	const source = "logic.InsertBatchOfDocuments"
 
 	for idx, batch := range batches {
@@ -68,7 +67,7 @@ func InsertBatchOfDocuments(batches [][]server.FileInfo, indexName string, inser
 }
 
 // CreateBulkRequestBody Функция для создания тела пакетного запроса индексации
-func CreateBulkRequestBody(vacancies []server.FileInfo) ([]byte, *errs.Error) {
+func CreateBulkRequestBody(vacancies []models.FileInfo) ([]byte, *errs.Error) {
 	const source = "logic.CreateBulkRequestBody"
 
 	var body []byte
@@ -110,7 +109,7 @@ func GetQueryParams(c *fiber.Ctx) map[string]string {
 	return v
 }
 
-func GetKeywords(vacancy server.FileInfo) []string {
+func GetKeywords(vacancy models.FileInfo) []string {
 	keywords := make(map[string]struct{})
 
 	specialisations := strings.Split(vacancy.ProfessionalSphereName, ",")

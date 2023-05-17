@@ -45,7 +45,7 @@ func (s *Server) insert(c *fiber.Ctx) error {
 		return c.SendStatus(http.StatusInternalServerError)
 	}
 
-	var vs []FileInfo
+	var vs []models.FileInfo
 	e = json.Unmarshal(bs, &vs)
 	if e != nil {
 		s.logs <- errs.NewError(logrus.InfoLevel, e.Error()).Wrap(source)
@@ -74,7 +74,7 @@ func (s *Server) insertBatch(c *fiber.Ctx) error {
 		return c.SendStatus(http.StatusInternalServerError)
 	}
 
-	var vs []FileInfo
+	var vs []models.FileInfo
 	e = json.Unmarshal(bs, &vs)
 	if e != nil {
 		s.logs <- errs.NewError(logrus.InfoLevel, e.Error()).Wrap(source)
@@ -117,7 +117,7 @@ func (s *Server) fillRedis(c *fiber.Ctx) error {
 		return c.SendStatus(http.StatusInternalServerError)
 	}
 
-	var vs []FileInfo
+	var vs []models.FileInfo
 	e = json.Unmarshal(bs, &vs)
 	if e != nil {
 		s.logs <- errs.NewError(logrus.InfoLevel, e.Error()).Wrap(source)
