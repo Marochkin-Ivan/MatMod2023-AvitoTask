@@ -1,8 +1,9 @@
 package server
 
 import (
-	"api/internal/models"
 	"api/pkg/errs"
+	"api/pkg/tools/den"
+	"encoding/json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sirupsen/logrus"
 	"net/http"
@@ -12,52 +13,56 @@ func (s *Server) ping(c *fiber.Ctx) error {
 	return c.SendStatus(http.StatusOK)
 }
 
-type getListReq struct {
-}
+func (s *Server) search(c *fiber.Ctx) error {
+	const source = "search"
 
-func (s *Server) getList(c *fiber.Ctx) error {
-	const source = "server.getList"
+	userID := c.Cookies("user_id")
 
-	var req getListReq
-	if err := c.QueryParser(&req); err != nil {
-		s.logs <- errs.NewError(logrus.InfoLevel, err.Error()).Wrap(source)
-		return c.Status(http.StatusBadRequest).SendString(err.Error())
+	queryParams := getQueryParams(c)
+
+	searchReq := createSearchRequest(queryParams["q"])
+
+	for param, value := range queryParams {
+		if filterFunc, exist := filtersTypeMap[param]; exist {
+			searchReq.withFilter(filterFunc, param, value)
+		}
 	}
 
-	// req.Validate()
+	b, _ := json.Marshal(searchReq)
+	s.logs <- errs.NewError(logrus.DebugLevel, string(b)).Wrap(source)
 
-	// list, err := s.app.GetList(req)
-	// if err != nil {
-	// 	s.logs <- errs.NewError(logrus.InfoLevel, err.Error()).Wrap(source)
-	// 	return c.Status(http.StatusInternalServerError).SendString(err.Error())
-	// }
+	encodedSearchReq, err := den.EncodeJson(searchReq)
+	if err != nil {
+		s.logs <- errs.NewError(logrus.ErrorLevel, err.Error()).Wrap(source)
 
-	return c.Status(http.StatusOK).SendString(models.DefaultList)
-
-	//return c.SendStatus(http.StatusOK)
-}
-
-type getDetailReq struct {
-}
-
-func (s *Server) getDetail(c *fiber.Ctx) error {
-	const source = "server.getDetail"
-
-	var req getDetailReq
-	if err := c.QueryParser(&req); err != nil {
-		s.logs <- errs.NewError(logrus.InfoLevel, err.Error()).Wrap(source)
-		return c.Status(http.StatusBadRequest).SendString(err.Error())
+		return c.SendStatus(http.StatusInternalServerError)
 	}
 
-	// req.Validate()
+	resBytes, err := s.es.Search(encodedSearchReq.Bytes())
+	if err != nil {
+		s.logs <- errs.NewError(logrus.ErrorLevel, err.Error()).Wrap(source)
 
-	// detail, err := s.app.GetDetail(req)
-	// if err != nil {
-	// 	s.logs <- errs.NewError(logrus.InfoLevel, err.Error()).Wrap(source)
-	// 	return c.Status(http.StatusInternalServerError).SendString(err.Error())
-	// }
+		return c.SendStatus(http.StatusInternalServerError)
+	}
 
-	return c.Status(http.StatusOK).SendString(models.DefaultInfo)
+	var res ElasticResponse
+	err = den.DecodeJson(&res, resBytes)
+	if err != nil {
+		s.logs <- errs.NewError(logrus.ErrorLevel, err.Error()).Wrap(source)
 
-	//return c.SendStatus(http.StatusOK)
+		return c.SendStatus(http.StatusInternalServerError)
+	}
+
+	err = res.RankSort(userID, s.cache)
+	if err != nil {
+		s.logs <- err.WrapWithSentry(
+			source,
+			errs.SentryCategoryHandler,
+			errs.InputToSentryData("userID", userID),
+		)
+
+		return c.SendStatus(http.StatusInternalServerError)
+	}
+
+	return c.Status(http.StatusOK).JSON(res.ToResponse())
 }

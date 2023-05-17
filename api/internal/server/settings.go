@@ -1,9 +1,10 @@
 package server
 
 import (
+	"api/internal/repo/cache"
+	"api/internal/repo/es"
+	"api/pkg/errs"
 	"errors"
-	"es-writer/internal/repo/es"
-	"es-writer/pkg/errs"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sirupsen/logrus"
 	"os"
@@ -44,7 +45,7 @@ func WithElasticSearch(cli *es.Client) func(*Server) {
 	}
 }
 
-func WithCache(c Setter) func(*Server) {
+func WithCache(c *cache.Client) func(*Server) {
 	return func(s *Server) {
 		s.cache = c
 	}
@@ -54,14 +55,7 @@ func (s *Server) SetupHandlers() *Server {
 	v1 := s.a.Group("/api/v1/search")
 
 	v1.Get("/ping", s.ping)
-
-	// for example
-	v1.Get("/create/index", s.create)
-	v1.Get("/insert/document", s.insert)
-	v1.Get("/insert/documents", s.insertBatch)
-	v1.Get("/fill/cache", s.fillRedis)
-
-	v1.Get("/test", s.test)
+	v1.Get("/search", s.search)
 
 	return s
 }

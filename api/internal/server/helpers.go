@@ -81,3 +81,35 @@ func SetupSentry(serverName, dsn string) *errs.Error {
 
 	return nil
 }
+
+func getQueryParams(c *fiber.Ctx) map[string]string {
+	v := make(map[string]string)
+
+	c.Request().URI().QueryArgs().VisitAll(func(key, value []byte) {
+		v[string(key)] = string(value)
+	})
+
+	return v
+}
+
+func createSearchRequest(q string) searchRequest {
+	return searchRequest{
+		Query: Query{
+			Bool: Bool{
+				Should: Should{
+					MultiMatch: MultiMatch{
+						Query:     q,
+						Fuzziness: "AUTO",
+						Type:      "best_fields",
+						Fields: []string{
+							"title^3",
+							"requirements^1.5",
+							"companyName^1",
+						},
+						TieBreaker: 0.3,
+					},
+				},
+			},
+		},
+	}
+}
