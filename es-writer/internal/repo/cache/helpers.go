@@ -1,10 +1,12 @@
 package cache
 
 import (
+	"context"
 	"es-writer/pkg/errs"
 	"github.com/caarlos0/env/v8"
 	"github.com/go-redis/redis/v8"
 	"github.com/sirupsen/logrus"
+	"log"
 )
 
 func getConfig() (config, *errs.Error) {
@@ -20,7 +22,7 @@ func getConfig() (config, *errs.Error) {
 }
 
 func New() (Connections, *errs.Error) {
-	const source = "NewConnections"
+	const source = "New"
 
 	c, err := getConfig()
 	if err != nil {
@@ -30,11 +32,12 @@ func New() (Connections, *errs.Error) {
 	cons := make(Connections, tablesCount)
 	for idx := range cons {
 		cons[idx] = redis.NewClient(&redis.Options{
-			Username: c.user,
-			Password: c.password,
-			Addr:     c.addr,
+			Username: c.User,
+			Password: c.Password,
+			Addr:     c.Addr,
 			DB:       idx,
 		})
+		log.Println(cons[idx].Ping(context.Background()))
 	}
 
 	return cons, nil

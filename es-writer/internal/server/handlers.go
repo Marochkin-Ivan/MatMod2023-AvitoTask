@@ -111,6 +111,12 @@ func (s *Server) test(c *fiber.Ctx) error {
 func (s *Server) fillRedis(c *fiber.Ctx) error {
 	const source = "server.fillRedis"
 
+	err := s.cache.FlushAll()
+	if err != nil {
+		s.logs <- err.Wrap(source)
+		return c.SendStatus(http.StatusInternalServerError)
+	}
+
 	bs, e := os.ReadFile(filename)
 	if e != nil {
 		s.logs <- errs.NewError(logrus.InfoLevel, e.Error()).Wrap(source)
@@ -124,26 +130,39 @@ func (s *Server) fillRedis(c *fiber.Ctx) error {
 		return c.SendStatus(http.StatusInternalServerError)
 	}
 
-	for _, vacancy := range vs {
-		info, err := den.EncodeJson(vacancy)
+	batches := logic.SplitIntoBatches(vs, 100)
+
+	for idx, batch := range batches {
+		infoKVMap := make(map[string]string)
+		keywordsKVMap := make(map[string][]string)
+
+		for _, vacancy := range batch {
+			info, err := den.EncodeJson(vacancy)
+			if err != nil {
+				s.logs <- err.Wrap(source)
+				return c.SendStatus(http.StatusInternalServerError)
+			}
+
+			infoKVMap[vacancy.ID] = info.String()
+
+			keywords := logic.GetKeywords(vacancy)
+
+			keywordsKVMap[vacancy.ID] = keywords
+		}
+
+		err = s.cache.SetValueInPipeline(cache.Info, infoKVMap)
 		if err != nil {
 			s.logs <- err.Wrap(source)
 			return c.SendStatus(http.StatusInternalServerError)
 		}
 
-		err = s.cache.SetValue(cache.Info, vacancy.ID, info.String())
+		err = s.cache.AddValueInPipeline(cache.Keywords, keywordsKVMap)
 		if err != nil {
 			s.logs <- err.Wrap(source)
 			return c.SendStatus(http.StatusInternalServerError)
 		}
 
-		keywords := logic.GetKeywords(vacancy)
-
-		err = s.cache.AddValue(cache.Keywords, vacancy.ID, keywords)
-		if err != nil {
-			s.logs <- err.Wrap(source)
-			return c.SendStatus(http.StatusInternalServerError)
-		}
+		log.Println("batch", idx, "added")
 	}
 
 	return c.SendStatus(http.StatusOK)

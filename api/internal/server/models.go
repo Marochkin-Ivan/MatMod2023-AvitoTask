@@ -7,6 +7,11 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+type Getter interface {
+	GetValue(dbID int, key string) (string, *errs.Error)
+	GetArray(dbID int, key string) ([]string, *errs.Error)
+}
+
 type Server struct {
 	cfg   Config
 	logs  errs.LogChan
@@ -145,9 +150,4 @@ type Vacancy struct {
 type RedisEvent struct {
 	VacancyID  string  `json:"vacancy_id"`
 	TypePoints float64 `json:"type_points"`
-}
-
-type Getter interface {
-	GetValue(dbID int, key string) (string, *errs.Error)
-	GetArray(dbID int, key string) ([]string, *errs.Error)
 }

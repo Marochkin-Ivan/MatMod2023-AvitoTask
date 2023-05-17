@@ -5,9 +5,9 @@ import "github.com/go-redis/redis/v8"
 type Connections []*redis.Client
 
 type config struct {
-	addr     string `env:"REDIS_ADDR" envDefault:""`
-	user     string `env:"REDIS_USER" envDefault:""`
-	password string `env:"REDIS_PASS" envDefault:""`
+	Addr     string `env:"REDIS_ADDR" envDefault:""`
+	User     string `env:"REDIS_USER" envDefault:""`
+	Password string `env:"REDIS_PASS" envDefault:""`
 }
 
 const (

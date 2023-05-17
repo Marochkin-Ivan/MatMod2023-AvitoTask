@@ -42,8 +42,11 @@ var createIndexRequest = map[string]interface{}{
 }
 
 type Setter interface {
-	// AddValue добавляет множество значений к массиву |ключ(string) : значение(string)|
-	AddValue(dbID int, key string, val []string) *errs.Error
-	// SetValue создает элемент в указанной таблице |ключ(string) : значение(string)|
-	SetValue(dbID int, key string, val string) *errs.Error
+	// AddValueInPipeline добавляет множество значений к массиву |ключ(string) : значение(string)|
+	AddValueInPipeline(dbID int, KVMap map[string][]string) *errs.Error
+	// SetValueInPipeline создает элемент в указанной таблице |ключ(string) : значение(string)|
+	SetValueInPipeline(dbID int, KVMap map[string]string) *errs.Error
+
+	FlushAll() *errs.Error
+	Ping() *errs.Error
 }
