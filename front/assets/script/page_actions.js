@@ -20,31 +20,19 @@ $left_button.addEventListener('click', e => {
     });
   });
 
-// // Удаление компетенции
-// function remove(){
-//     let w = this.closest('.competence'), br = w.nextElementSibling;
-    
-//     if(br.nodeType === 1 && br.nodeName === 'BR')
-//       br.remove();
-    
-//     w.remove();
-//   }
-  
-//   Array.from(document.querySelectorAll('.cross')).forEach(b => b.addEventListener('click', remove));
 
-
-//Запрос Id пользователя и сохранение их в cookie
-if (document.cookie.indexOf(encodeURIComponent('user_id')) == 0) {
-    let delete_id = confirm("Dev_хотите удалить Id пользователя?");
-    if (delete_id == true) {
-        setCookie(user_id, "", {
-            'max-age': -1
-          })
-    }else {
-    alert(decodeURIComponent(document.cookie));
-    }
+// Запрос Id пользователя и сохранение их в cookie
+// if (document.cookie.indexOf(encodeURIComponent('user_id')) == 0) {
+//     let delete_id = confirm("Dev_хотите удалить Id пользователя?");
+//     if (delete_id == true) {
+//         setCookie(user_id, "", {
+//             'max-age': -1
+//           })
+//     }else {
+//     alert(decodeURIComponent(document.cookie));
+//     }
     
-}else{
-    let user_id = prompt("Dev_введите Id для текущего пользователя:", undefined);
-    document.cookie = encodeURIComponent('user_id') + '=' + encodeURIComponent(user_id);
-}
+// }else{
+//     let user_id = prompt("Dev_введите Id для текущего пользователя:", undefined);
+//     document.cookie = encodeURIComponent('user_id') + '=' + encodeURIComponent(user_id);
+// }

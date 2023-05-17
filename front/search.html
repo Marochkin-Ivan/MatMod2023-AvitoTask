@@ -16,7 +16,7 @@
         </div>
         <div class="search">
             <div id='search_form'>
-                <input id='search' type="text" class="input_name" placeholder="🔍︎ Поиск по объявлениям (вакансиям)">
+                <input id='search' type="text" class="input_name" style="outline:none;" placeholder="🔍︎ Поиск по объявлениям (вакансиям)">
                 </input>
                 <button type="submit" class="search_button">
                     <img class="search_arrow" src="assets/images/icons/hardware/ic_keyboard_arrow_right_48px.png">
@@ -52,48 +52,6 @@
         <span>Вакансии</span>
     </div>
     <div id="competence_container" class="competence_container">
-        <div class="competence">
-            <div class="line">
-                <h7>MS SQL</h7>
-                <button type="button" id='cross' class="delete_competence"><img class='cross' src="assets/images/icon.png"></button>
-            </div>
-        </div>
-        <div class="competence">
-            <div class="line">
-                <h7>Водительские права</h7>
-                <button type="button" id='cross' class="delete_competence"><img class='cross' src="assets/images/icon.png"></button>
-            </div>
-        </div>
-        <div class="competence">
-            <div class="line">
-                <h7>Python</h7>
-                <button type="button" id='cross' class="delete_competence"><img class='cross' src="assets/images/icon.png"></button>
-            </div>
-        </div>
-        <div class="competence">
-            <div class="line">
-                <h7>PowerPoint</h7>
-                <button type="button" id='cross' class="delete_competence"><img class='cross' src="assets/images/icon.png"></button>
-            </div>
-        </div>
-        <div class="competence">
-            <div class="line">
-                <h7>PowerPoint</h7>
-                <button type="button" id='cross' class="delete_competence"><img class='cross' src="assets/images/icon.png"></button>
-            </div>
-        </div>
-        <div class="competence">
-            <div class="line">
-                <h7>PowerPoint</h7>
-                <button type="button" id='cross' class="delete_competence"><img class='cross' src="assets/images/icon.png"></button>
-            </div>
-        </div>
-        <div class="competence">
-            <div class="line">
-                <h7>PowerPoint</h7>
-                <button type="button" id='cross' class="delete_competence"><img class='cross' src="assets/images/icon.png"></button>
-            </div>
-        </div>
     </div>
     <button type="button" id="left_arrow" class="left_arrow"><img class="right_arrow" src="assets/images/arrow/circle_chevron_left.png"></button>
     <button type="button" id="right_arrow" class="right_arrow"><img class="right_arrow" src="assets/images/arrow/circle_chevron_right.png"></button>
@@ -111,12 +69,17 @@
     </aside>
     <div id="vacancies">
     </div>
-    <script src="assets/script/download_vacancies.js"></script>
-    <script src="assets/script/competence_session_storage.js"></script>
-    <script src="assets/script/competence_list.js"></script>
+    <div class="pages">
+        <button type="button" class="previous_page">Вернуться к предыдущим вакансиям</button>
+        <button type="button" class="next_page">Показать ещё вакансии</button>
+    </div>    
     <script src="assets/script/search_querry.js"></script>
     <script src="assets/script/fetch_query.js"></script>
+    <script src="assets/script/competence_session_storage.js"></script>
+    <script src="assets/script/download_vacancies.js"></script>
+    <script src="assets/script/competence_list.js"></script>
     <script src="assets/script/page_actions.js"></script>
-    <script src="assets/script/infinite_scroll.js"></script>
+    <script src="assets/script/actions.js"></script>
+    <script src="assets/script/next_page.js"></script>
 </body>
 </html>

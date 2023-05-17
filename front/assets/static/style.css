@@ -15,7 +15,7 @@ body {
     z-index: 1000;
     background-color: #293137;
     position: fixed;
-    left: 1%;
+    left: 1;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -214,7 +214,8 @@ body {
 .container_search {
     display: flex;
     position: relative;
-    top: 100px; left: 1%
+    top: 100px; left: 1%;
+    width: 400px
 }
 
 .a3 {
@@ -278,7 +279,7 @@ body {
 }
 
 .left_arrow {
-    z-index: 1000;
+    z-index: 100;
     background: none;
     border: none;
     position: relative;
@@ -286,7 +287,7 @@ body {
 }
 
 .right_arrow {
-    z-index: 1000;
+    z-index: 100;
     background: none;
     border: none;
     position: relative;
@@ -363,7 +364,7 @@ body {
 .vacancy_list {
     position: relative;
     top: 200px; left: 2%;
-    height: 174px; width: 89%;
+    height: 200px; width: 89%;
     min-width: 550px;
     background-color: #D9D9D99E;
     opacity: 100%;
@@ -390,7 +391,7 @@ body {
 
 .respond_vacancy {
     position: relative;
-    top: 10px; left: 10%;
+    top: 10px; right: 1%;
     margin-left: auto;
     width: 20%;
     min-width: 130px;
@@ -404,7 +405,9 @@ body {
 }
 
 .respond_vacancy:hover {
-    cursor:pointer
+    cursor:pointer;
+    color: lightblue;
+    font-weight: 800
 }
 
 .write {
@@ -415,7 +418,7 @@ body {
     top: 10px; right: 4%;
     margin-left: auto;
     width: 20%;
-    min-width: 130px;
+    min-width: 100px;
     height: 43.57px;
     vertical-align: middle;
     border: none;
@@ -423,7 +426,8 @@ body {
     background-color: #D9D9D9;
     opacity: 62%;
     font-weight: 600;
-    font-size: 90%
+    font-size: 90%;
+    text-overflow: ellipsis
 }
 
 .write h5 {
@@ -431,7 +435,10 @@ body {
     font-style: normal;
     font-weight: 600;
     font-size: 16px;
-    line-height: 19px
+    line-height: 19px;
+    max-width: 500px;
+    overflow: hidden;
+    text-overflow: ellipsis
 }
 
 .write img {
@@ -442,23 +449,51 @@ body {
     cursor:pointer
 }
 
+.write #write:hover {
+    font-weight: 800
+}
+
 .vacancy_list h3 {
     color: black;
     margin: 0px;
     margin-top: 20px;
+    width: 320px;
     position: relative;
     white-space: nowrap;
-    font-size: 20px;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    font-size: 20px
 }
 
 .description {
     display: flex;
-    width: 660px;
+    padding-top: 7px;
+    width: 700px; height: 120px;
     flex-direction: column;
+    overflow-x: hidden;
     text-overflow: ellipsis;
     position: relative;
-    left: 3%;
+    left: 3%; bottom: 25px;
+    -webkit-line-clamp: 5;
     transition: opacity 0.8s
+}
+
+.text p {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis    
+}
+
+.text_back {
+    height: 150px;
+    color: black;
+    position: relative;
+    left: 12%; bottom: 30px;
+    width: 550px
+}
+
+.text_back p {
+    width: 550px       
 }
 
 .vacancy_list h4 {
@@ -467,23 +502,28 @@ body {
     margin-top: 8px;
     position: relative;
     white-space: nowrap;
+    width: 200px; height: 50px;
     font-size: 20px;
-    transition: opacity 0.8s
+    transition: opacity 0.8s;
+    overflow: hidden;
+    text-overflow: ellipsis
 }
 
 .vacancy_list .text {
+    width: 600px; height: 45px;
+    overflow: hidden;
     text-overflow: ellipsis;
     color: black;
     margin: 0px;
     margin-top: 5px;
     margin-left: 14%;
     position: relative;
-    bottom: 20px
+    bottom: 10px
 }
 
 .transform_vacancy {
     position: relative;
-    bottom: 35%; left: 93.5%;
+    bottom: 38%; left: 93.5%;
     background: none;
     border: none
 }
@@ -492,8 +532,12 @@ body {
 /* Стили для отображения вакансий - обратная сторона */
 .back_side {
     position: relative;
-    bottom: 80%;
-    opacity: 0%
+    bottom: 180px; left: 5%;
+    opacity: 0%;
+    padding-top: 7px;
+    width: 660px; height: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Анимация карточки */
@@ -517,3 +561,45 @@ body {
 }
 
 /*  */
+.pages {
+    display: flex;
+    justify-content: flex-end;
+    position: relative;
+    top: 180px; right: 30%
+}
+
+.previous_page {
+    background-color: #D9D9D9;
+    border-style: none;
+    margin: 15px 20px;
+    width: 150px; height: 70px;
+    font-size: 12pt;
+    border-radius: 20px
+}
+
+.next_page {
+    background-color: #D9D9D9;
+    border-style: none;
+    margin: 15px 20px;
+    width: 150px; height: 70px;
+    font-size: 12pt;
+    border-radius: 20px;
+}
+
+.next_page:hover {
+    cursor: pointer
+}
+
+.next_page:active {
+    cursor:grab;
+    background-color: aliceblue;
+}
+
+.previous_page:hover {
+    cursor: pointer
+}
+
+.previous_page:active {
+    cursor:grab;
+    background-color: aliceblue;
+}
