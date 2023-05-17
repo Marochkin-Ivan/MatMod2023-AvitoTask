@@ -1,0 +1,41 @@
+{
+ "took": 20,
+ "hits": {
+  "hits": [
+   {
+    "_index": "vacancy",
+    "_id": "P6HXG4gBOOlioVlDqzd1",
+    "_score": 27.498236,
+    "_source": {
+     "title": "Курьер",
+     "requirements": "",
+     "keywords": "Административная работа, секретариат, АХО",
+     "salary": 64000.0,
+     "region": "Краснодарский край",
+     "companyName": "ИП Коваль Елена Михайловна",
+     "schedule": "Гибкий график",
+     "experience": 0,
+     "employment": "Полная занятость",
+     "createdAt": "2023-04-27T13:00:15+0300"
+    }
+   },
+   {
+    "_index": "vacancy",
+    "_id": "S6HXG4gBOOlioVlDqzd1",
+    "_score": 27.498236,
+    "_source": {
+     "title": "Курьер",
+     "requirements": "",
+     "keywords": "Административная работа, секретариат, АХО",
+     "salary": 64000.0,
+     "region": "Астраханская область",
+     "companyName": "ИП Коваль Елена Михайловна",
+     "schedule": "Гибкий график",
+     "experience": 0,
+     "employment": "Полная занятость",
+     "createdAt": "2023-04-27T13:00:15+0300"
+    }
+   }
+  ]
+ }
+}

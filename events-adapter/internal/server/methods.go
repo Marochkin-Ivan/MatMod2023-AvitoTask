@@ -1,8 +1,8 @@
 package server
 
 import (
-	"api/pkg/errs"
 	"errors"
+	"events-adapter/pkg/errs"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sirupsen/logrus"
 	"os"
@@ -37,14 +37,19 @@ func WithConfig(cfg Config) func(*Server) {
 	}
 }
 
+func WithCache(c Setter) func(*Server) {
+	return func(s *Server) {
+		s.cache = c
+	}
+}
+
 func (s *Server) SetupHandlers() *Server {
-	v1 := s.a.Group("/api/v1/search")
+	v1 := s.a.Group("/api/v1/events")
 
 	v1.Get("/ping", s.ping)
 
 	// for example
-	v1.Get("/list", s.getList)
-	v1.Get("/:id/detail", s.getDetail)
+	v1.Get("/event", s.event)
 
 	return s
 }

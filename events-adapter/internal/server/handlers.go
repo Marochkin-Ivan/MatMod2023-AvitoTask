@@ -1,8 +1,10 @@
 package server
 
 import (
-	"api/internal/models"
-	"api/pkg/errs"
+	"events-adapter/internal/repo/cache"
+	"events-adapter/internal/repo/logic"
+	"events-adapter/pkg/errs"
+	"events-adapter/pkg/tools/den"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sirupsen/logrus"
 	"net/http"
@@ -12,52 +14,40 @@ func (s *Server) ping(c *fiber.Ctx) error {
 	return c.SendStatus(http.StatusOK)
 }
 
-type getListReq struct {
-}
+func (s *Server) event(c *fiber.Ctx) error {
+	const source = "event"
 
-func (s *Server) getList(c *fiber.Ctx) error {
-	const source = "server.getList"
+	userID := c.Cookies("user_id")
+	s.logs <- errs.NewError(logrus.DebugLevel, userID).Wrap(source)
 
-	var req getListReq
-	if err := c.QueryParser(&req); err != nil {
-		s.logs <- errs.NewError(logrus.InfoLevel, err.Error()).Wrap(source)
-		return c.Status(http.StatusBadRequest).SendString(err.Error())
+	vacancyID := c.Query("vacancy_id")
+	s.logs <- errs.NewError(logrus.DebugLevel, vacancyID).Wrap(source)
+
+	eventType := c.Query("type")
+	s.logs <- errs.NewError(logrus.DebugLevel, eventType).Wrap(source)
+
+	ev := logic.CreateRedisEvent(vacancyID, eventType)
+	encoded, err := den.EncodeJson(ev)
+	if err != nil {
+		s.logs <- err.WrapWithSentry(
+			source,
+			errs.SentryCategoryHandler,
+			errs.InputToSentryData("vacancyID, type", vacancyID, eventType),
+		)
+
+		return c.SendStatus(http.StatusInternalServerError)
 	}
 
-	// req.Validate()
+	err = s.cache.AddValue(cache.UserEvents, userID, encoded.String())
+	if err != nil {
+		s.logs <- err.WrapWithSentry(
+			source,
+			errs.SentryCategoryHandler,
+			errs.InputToSentryData("vacancyID, type", vacancyID, eventType),
+		)
 
-	// list, err := s.app.GetList(req)
-	// if err != nil {
-	// 	s.logs <- errs.NewError(logrus.InfoLevel, err.Error()).Wrap(source)
-	// 	return c.Status(http.StatusInternalServerError).SendString(err.Error())
-	// }
-
-	return c.Status(http.StatusOK).SendString(models.DefaultList)
-
-	//return c.SendStatus(http.StatusOK)
-}
-
-type getDetailReq struct {
-}
-
-func (s *Server) getDetail(c *fiber.Ctx) error {
-	const source = "server.getDetail"
-
-	var req getDetailReq
-	if err := c.QueryParser(&req); err != nil {
-		s.logs <- errs.NewError(logrus.InfoLevel, err.Error()).Wrap(source)
-		return c.Status(http.StatusBadRequest).SendString(err.Error())
+		return c.SendStatus(http.StatusInternalServerError)
 	}
 
-	// req.Validate()
-
-	// detail, err := s.app.GetDetail(req)
-	// if err != nil {
-	// 	s.logs <- errs.NewError(logrus.InfoLevel, err.Error()).Wrap(source)
-	// 	return c.Status(http.StatusInternalServerError).SendString(err.Error())
-	// }
-
-	return c.Status(http.StatusOK).SendString(models.DefaultInfo)
-
-	//return c.SendStatus(http.StatusOK)
+	return c.SendStatus(http.StatusOK)
 }

@@ -1,0 +1,50 @@
+package cache
+
+import (
+	"context"
+	"es-writer/pkg/errs"
+	"github.com/caarlos0/env/v8"
+	"github.com/go-redis/redis/v8"
+	"github.com/sirupsen/logrus"
+	"log"
+)
+
+func getConfig() (config, *errs.Error) {
+	const source = "getConfig"
+
+	var cfg config
+	err := env.Parse(&cfg)
+	if err != nil {
+		return config{}, errs.NewError(logrus.ErrorLevel, err.Error()).Wrap(source)
+	}
+
+	return cfg, nil
+}
+
+func New() (Connections, *errs.Error) {
+	const source = "New"
+
+	c, err := getConfig()
+	if err != nil {
+		return Connections{}, err.WrapWithSentry(source, errs.SentryCategoryFunc, nil)
+	}
+
+	cons := make(Connections, tablesCount)
+	for idx := range cons {
+		cons[idx] = redis.NewClient(&redis.Options{
+			Username: c.User,
+			Password: c.Password,
+			Addr:     c.Addr,
+			DB:       idx,
+		})
+		log.Println(cons[idx].Ping(context.Background()))
+	}
+
+	return cons, nil
+}
+
+func Close(conns Connections) {
+	for _, conn := range conns {
+		conn.Close()
+	}
+}

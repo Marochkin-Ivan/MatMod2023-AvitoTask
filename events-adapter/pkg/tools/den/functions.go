@@ -1,8 +1,8 @@
 package den
 
 import (
-	"api/pkg/errs"
 	"bytes"
+	"events-adapter/pkg/errs"
 	"github.com/sirupsen/logrus"
 	"github.com/ugorji/go/codec"
 )

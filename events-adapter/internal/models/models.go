@@ -19,3 +19,8 @@ type BaseConfig struct {
 	TLSKey     string `env:"TLS_KEY" envDefault:""`
 	TLSPem     string `env:"TLS_PEM" envDefault:""`
 }
+
+type RedisEvent struct {
+	VacancyID  string  `json:"vacancy_id"`
+	TypePoints float64 `json:"type_points"`
+}

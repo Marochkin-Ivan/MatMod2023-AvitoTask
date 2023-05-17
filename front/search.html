@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/static/style.css">
+    <link href='http://fonts.googleapis.com/css?family=Roboto&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+    <meta charset="utf-8">
+    <title>Поиск вакансий</title>
+</head>
+<body>
+    <header  class="container_head">
+        <div class="logo">
+            <img src="assets/images/logo.png">
+        </div>
+        <div class="search">
+            <div id='search_form'>
+                <input id='search' type="text" class="input_name" style="outline:none;" placeholder="🔍︎ Поиск по объявлениям (вакансиям)">
+                </input>
+                <button type="submit" class="search_button">
+                    <img class="search_arrow" src="assets/images/icons/hardware/ic_keyboard_arrow_right_48px.png">
+                </button>
+            </div>
+        </div>
+        <button onclick="myFunction()" class="sort_button"><img src="assets/images/filter_outline.png"></button>
+        <div class="dropdown">
+            <div id="myDropdown" class="dropdown-content">
+            </div>
+        </div>
+        <div class="container_nav_center">
+            <nav>
+                <a class='a2' href="">Главная</a>
+                <a class='a2' href="">Каталоги</a>
+                <a class='a2' href="">Помощь</a>
+                <a class='a2' href="">Контакты</a>
+            </nav>
+        </div>
+        <div class = "set_vacancy">
+            <a class='set_vacancy_a' href="">Разместить объявление</a>
+        </div>
+        <div class="auth">
+            <a class='login' href="">Вход и регистрация</a>
+        </div>
+    </header>
+    <div class="container_search">
+        <a href='' class="a3">Главная</a>·
+        <a href='' class="a3">Работа</a>·
+        <a href='' class="a3">Вакансии</a>
+    </div>
+    <div class="vacancy_name">
+        <span>Вакансии</span>
+    </div>
+    <div id="competence_container" class="competence_container">
+    </div>
+    <button type="button" id="left_arrow" class="left_arrow"><img class="right_arrow" src="assets/images/arrow/circle_chevron_left.png"></button>
+    <button type="button" id="right_arrow" class="right_arrow"><img class="right_arrow" src="assets/images/arrow/circle_chevron_right.png"></button>
+    <aside class="side_bar">
+        <div class="region">
+            <img class="attention" src="assets/images/attention/error_outline.png">
+        </div>
+        <h2>Работа в известных компаниях</h2>
+        <div class="side_ads">
+            <div class="company_ads">
+                <img class='png_ads' src="data:image/png;base64,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">
+                <h5>Название компании</h5>
+            </div>
+        </div>
+    </aside>
+    <div id="vacancies">
+    </div>
+    <div class="pages">
+        <button type="button" class="previous_page">Вернуться к предыдущим вакансиям</button>
+        <button type="button" class="next_page">Показать ещё вакансии</button>
+    </div>    
+    <script src="assets/script/search_querry.js"></script>
+    <script src="assets/script/fetch_query.js"></script>
+    <script src="assets/script/competence_session_storage.js"></script>
+    <script src="assets/script/download_vacancies.js"></script>
+    <script src="assets/script/competence_list.js"></script>
+    <script src="assets/script/page_actions.js"></script>
+    <script src="assets/script/actions.js"></script>
+    <script src="assets/script/next_page.js"></script>
+</body>
+</html>
