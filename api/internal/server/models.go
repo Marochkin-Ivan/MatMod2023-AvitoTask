@@ -68,8 +68,7 @@ var filtersTypeMap = map[string]string{
 	"salaryMax":  "range",
 	"employment": "match_phrase",
 	"schedule":   "match_phrase",
-	"from":       "",
-	"size":       "",
+	"page":       "",
 }
 
 type searchRequest struct {

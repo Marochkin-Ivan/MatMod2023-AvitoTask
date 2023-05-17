@@ -36,13 +36,10 @@ func (req *searchRequest) withFilter(filterFunc, param, value string) {
 				},
 			})
 
-	case "from":
-		v, _ := strconv.Atoi(value)
-		req.From = v
-
-	case "size":
-		v, _ := strconv.Atoi(value)
-		req.Size = v
+	case "page":
+		p, _ := strconv.Atoi(value)
+		req.Size = 10
+		req.From = 10 * (p - 1)
 	}
 }
 
